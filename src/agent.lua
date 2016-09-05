@@ -24,6 +24,7 @@ local Agent = Class(nil, true)
     :newValue("BrainSize", 25) -- >10
     :newValue("BrainDensity", 3) -- max synapses per neuron
     -- misc
+    :newValue("Color", {})
     :newValue("BoostCost", 0.001)
     :newValue("MutationFreq", 0.1) -- chance of mutation
     :newValue("MutationPower", 0.3) -- how much mutation?
@@ -38,6 +39,11 @@ Agent:newEvent("init", function(agent, info)
        :setVelX(info.vx)
        :setVelY(info.vy)
        :setRotation(info.rot)
+       :setColor(info.color or {
+         r = math.random(0, 255) / 255,
+         g = math.random(0, 255) / 255,
+         b = math.random(0, 255) / 255,
+       })
        :setBrain(
           Brain({
             density = agent:getBrainDensity(),
@@ -127,7 +133,13 @@ Event:new("update_world", function(dt)
       end
     end
     -- feed forward brain
-    a:getBrain():emitEvent("tick", a:getBrain(), a:getS1(), a:getS2())
+    a:getBrain():emitEvent("tick", a:getBrain(), {
+      [1]=a:getS1(), [2]=a:getS2(),
+      [3]=a:getHealth(),
+      [4]=1,
+      [5]=1,
+      [6]=1,
+    })
 
     local des = a:getBrain():getOutput().out0
     -- apply output0 : turning
@@ -151,6 +163,7 @@ Event:new("update_world", function(dt)
         x = a:getX() + math.randf(-30,30),
         y = a:getY() + math.randf(-30,30),
         birth = true,
+        color = a:getColor(),
       })
 
       newA:getBrain():emitEvent("mutateFrom", newA:getBrain(), a:getBrain())
@@ -193,16 +206,11 @@ Event:new("draw_world", function()
     -- body
 
     local c = Math.round(a:getHealth() * 255)
-    love.graphics.setColor(0, c, c)
+    love.graphics.setColor(c * a:getColor().r, c * a:getColor().g, c * a:getColor().b)
     love.graphics.circle("fill", a:getX(), a:getY(), a:getRadius())
 
     love.graphics.setColor(0, 0, 0)
     love.graphics.circle("line", a:getX(), a:getY(), a:getRadius())
-  end
-
-  for i = 1, #LOG_TEXT do
-    love.graphics.setColor(0, 0, 0, 255 - (i - 1) * 8)
-    love.graphics.print(LOG_TEXT[#LOG_TEXT - (i - 1)], 10, i * 15)
   end
 end)
 

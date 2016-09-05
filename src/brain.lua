@@ -31,14 +31,14 @@ Brain:newEvent("init", function(brain, info)
   end
 
   -- brain methods
-  brain:newEvent("tick", function(this, s1, s2)
-    this:getActivations()[1] = s1
-    this:getActivations()[2] = s2
+  brain:newEvent("tick", function(this, s)
+    this:getActivations()[1] = s[1]
+    this:getActivations()[2] = s[2]
     -- bias neurons
-    this:getActivations()[3] = 1
-    this:getActivations()[4] = 1
-    this:getActivations()[5] = 1
-    this:getActivations()[6] = 1
+    this:getActivations()[3] = s[3]
+    this:getActivations()[4] = s[4]
+    this:getActivations()[5] = s[5]
+    this:getActivations()[6] = s[6]
 
     for n = 7, this:getSize() do
       local a = 0

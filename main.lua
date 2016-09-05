@@ -49,14 +49,18 @@ for n = 0, 20 do
   })
 end
 
-for n = 0, 10 do
-  Agent({
-    x = math.randf(0, love.graphics.getWidth()),
-    y = math.randf(0, love.graphics.getHeight()),
-  })
+function spawn_agents(a)
+  for n = 0, a do
+    Agent({
+      x = math.randf(0, love.graphics.getWidth()),
+      y = math.randf(0, love.graphics.getHeight()),
+    })
+  end
 end
 
 food_timer = 0
+
+spawn_agents(10)
 
 Event:new("update", function(...)
   love.window.setTitle("The bois - " .. love.timer.getFPS() .. "fps")
@@ -65,6 +69,12 @@ end)
 
 Event:new("draw", function(...)
   Event:emit("draw_" .. State, ...)
+end)
+
+Event:new("keychanged", function(key, state)
+  if key == "space" and state then
+    spawn_agents(1)
+  end
 end)
 
 -- world update
